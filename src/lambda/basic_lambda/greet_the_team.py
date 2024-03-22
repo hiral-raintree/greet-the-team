@@ -4,7 +4,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 def index_handler(event, context):
-  logger.info("Hello Team, Do your best & leave the rest !")
+  logger.info("Hello Team, Do your best & leave the rest to God !")
 
   return {
     "statusCode": 200
