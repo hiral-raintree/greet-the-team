@@ -29,7 +29,10 @@ jobs:
         
       - name: install npm
         run: 'sudo apt update -y && sudo apt install nodejs npm -y'
-        
+      
+      - name: install typescript
+        run: 'sudo npm install -g typescript'
+
       - name: install aws cdk
         run: 'sudo npm install -g aws-cdk'
 
