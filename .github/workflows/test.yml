@@ -1,10 +1,40 @@
-name: Test
-on: 
-  push:
-    branches: [personal/aws-cdk-development]
+# name: Test
+# on: 
+#   push:
+#     branches: [personal/aws-cdk-development]
+# jobs:
+#   my-job:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: test-step
+#         run: echo "Hello, congratulations on your first gitHub action job!"
+
+name: Deploy AWS CDK
+on:
+  pull_request:
+    branches: [main]
 jobs:
-  my-job:
+  deployment:
     runs-on: ubuntu-latest
     steps:
-      - name: test-step
-        run: echo "Hello, congratulations on your first gitHub action job!"
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SECRET_KEY_ID }}
+          aws-region: us-east-1
+        
+      - name: install npm
+        run: 'sudo apt update -y && sudo apt install nodejs npm -y'
+        
+      - name: install aws cdk
+        run: 'sudo npm install -g aws-cdk'
+
+      - name: cdk synth
+        run: 'cdk synth'
+
+      - name: cdk deploy
+        run: 'cdk deploy'
