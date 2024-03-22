@@ -1,0 +1,10 @@
+name: Test
+on: 
+  push:
+    branches: [personal/aws-cdk-development]
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test-step
+        run: echo "Hello, congratulations on your first gitHub action job!"
