@@ -30,6 +30,9 @@ jobs:
       - name: install npm
         run: 'sudo apt update -y && sudo apt install nodejs npm -y'
       
+      - name: install node packages
+        run: 'sudo npm ci'
+
       - name: install typescript
         run: 'sudo npm install -g typescript'
 
