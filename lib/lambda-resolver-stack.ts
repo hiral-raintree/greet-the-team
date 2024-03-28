@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 
 interface ResolverLambdaPros {
   apiId: string;
+  roleArn: string;
 }
 
 export class LambdaResolverStack extends cdk.Stack {
@@ -26,6 +27,7 @@ export class LambdaResolverStack extends cdk.Stack {
       lambdaConfig: {
         lambdaFunctionArn: lambdaFunction.functionArn,
       },
+      serviceRoleArn: props.roleArn
     });
 
     const Resolver = new CfnResolver(this, `resolver`, {
