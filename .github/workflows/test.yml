@@ -12,7 +12,7 @@
 name: Deploy AWS CDK
 on:
   pull_request:
-    branches: [feature/aws-cdk-development]
+    branches: [feature/aws-cdk-development-appSyncAPI]
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -43,4 +43,4 @@ jobs:
         run: 'cdk synth'
 
       - name: cdk deploy
-        run: 'cdk deploy'
+        run: 'cdk deploy --all --require-approval never'

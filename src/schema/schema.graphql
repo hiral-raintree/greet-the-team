@@ -1,0 +1,38 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Book {
+  title: String
+  author: String
+}
+
+input CreateBookInput {
+  title: String!
+  author: String!
+}
+
+type CreateBookData {
+  title: String
+}
+
+type CreateBookResponse {
+  success: Boolean!
+  data: CreateBookData
+  error: String
+}
+
+type GetBookResponse {
+  success: Boolean!
+  data: CreateBookResponse
+  error: String
+}
+
+type Query {
+  getBookByTitle(title: String): GetBookResponse
+}
+
+type Mutation {
+  createBook(bookInput: CreateBookInput!): CreateBookResponse
+}
