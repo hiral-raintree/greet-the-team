@@ -33,7 +33,7 @@ export class LambdaResolverStack extends cdk.Stack {
     const Resolver = new CfnResolver(this, `resolver`, {
       apiId: props.apiId,
       typeName: 'Query',
-      fieldName: 'getData',
+      fieldName: 'getBookByTitle',
       dataSourceName: APIDataSource.name,
     });
     Resolver.addDependency(APIDataSource);
