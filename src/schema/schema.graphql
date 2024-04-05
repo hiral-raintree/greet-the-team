@@ -1,38 +1,192 @@
-schema {
-  query: Query
-  mutation: Mutation
+type Address {
+	addressType: String
+	addressLine1: String
+	addressLine2: String
+	city: String
+	state: String
+	zipCode: String
+	countryCode: String
+	isPrimary: Boolean
+}
+ 
+input CreateProviderInput {
+	firstName: String!
+	lastName: String!
+	middleInitial: String
+	firstNameAlias: String
+	namePrefix: String
+	nameSuffix: String
+	providerType: String
+	isTherapist: Boolean
+	isAssistan: Boolean
+	organizationName: String
+	specialty: String
+	npi: String
+	groupNpi: String
+	replacementNpi: String
+	taxId: String
+	taxonomyCode: String
+	groupTaxonomyCode: String
+	credentials: String
+	address: [InputAddress!]!
+	phoneNumber: [InputPhoneNumber!]!
+	email: String!
+	externalProviderId: [InputExternalProviderId!]!
+	additionalProviderDetails: [String!]!
+	createdDate: String
+	updatedDate: String
+	clientId: [ID!]!
+}
+ 
+type CreateProviderResponse {
+	success: Boolean!
+	data: Provider
+	error: String
 }
 
-type Book {
-  title: String
-  author: String
+type DeleteProviderData {
+	providerId: String!
+}
+ 
+type DeleteProviderResponse {
+	success: Boolean!
+	data: DeleteProviderData
+	error: String
+}
+ 
+type ExternalProviderId {
+	providerSource: String
+	providerId: ID
+	providerAdditionalDetails: [String!]!
+}
+ 
+type GetProviderResponse {
+	success: Boolean!
+	data: Provider
+	error: String
+}
+ 
+input InputAddress {
+	addressType: String
+	addressLine1: String
+	addressLine2: String
+	city: String
+	state: String
+	zipCode: String
+	countryCode: String
+	isPrimary: Boolean
 }
 
-input CreateBookInput {
-  title: String!
-  author: String!
+input InputExternalProviderId {
+	providerSource: String
+	providerId: ID
+	providerAdditionalDetails: [String!]!
 }
-
-type CreateBookData {
-  title: String
+ 
+input InputPhoneNumber {
+	phoneType: String
+	phoneNumber: String
+	phoneExtension: String
+	countryCode: String
+	isPrimary: Boolean
 }
-
-type CreateBookResponse {
-  success: Boolean!
-  data: CreateBookData
-  error: String
+ 
+type ListProviderResponse {
+	success: Boolean!
+	data: [Provider!]!
+	error: String
 }
-
-type GetBookResponse {
-  success: Boolean!
-  data: CreateBookResponse
-  error: String
+ 
+type PhoneNumber {
+	phoneType: String
+	phoneNumber: String
+	phoneExtension: String
+	countryCode: String
+	isPrimary: Boolean
 }
-
-type Query {
-  getBookByTitle(title: String): GetBookResponse
+ 
+# A Object That describe Providers details
+type Provider {
+	# Provider Id Number can't be a null
+	providerId: ID!
+	firstName: String!
+	# First Name String Can't be a null
+	lastName: String!
+	middleInitial: String
+	firstNameAlias: String
+	namePrefix: String
+	nameSuffix: String
+	providerType: String
+	isTherapist: Boolean
+	isAssistan: Boolean
+	organizationName: String
+	specialty: String
+	npi: String
+	groupNpi: String
+	replacementNpi: String
+	taxId: String
+	taxonomyCode: String
+	groupTaxonomyCode: String
+	credentials: String
+	address: [Address]
+	phoneNumber: [PhoneNumber!]!
+	email: String!
+	externalProviderId: [ExternalProviderId!]!
+	additionalProviderDetails: [String!]!
+	createdDate: String
+	updatedDate: String
+	clientId: [String!]!
 }
-
+ 
+input UpdateProviderInput {
+	firstName: String!
+	lastName: String!
+	middleInitial: String
+	firstNameAlias: String
+	namePrefix: String
+	nameSuffix: String
+	providerType: String
+	isTherapist: Boolean
+	isAssistan: Boolean
+	organizationName: String
+	specialty: String
+	npi: String
+	groupNpi: String
+	replacementNpi: String
+	taxId: String
+	taxonomyCode: String
+	groupTaxonomyCode: String
+	credentials: String
+	address: [InputAddress!]!
+	phoneNumber: [InputPhoneNumber!]!
+	email: String!
+	externalProviderId: [InputExternalProviderId!]!
+	additionalProviderDetails: [String!]!
+	createdDate: String
+	updatedDate: String
+	clientId: [ID!]!
+}
+ 
 type Mutation {
-  createBook(bookInput: CreateBookInput!): CreateBookResponse
+	createProvider(input: CreateProviderInput!): CreateProviderResponse
+	updateProvider(input: UpdateProviderInput!): CreateProviderResponse
+	deleteProvider(providerId: ID!): DeleteProviderResponse
+}
+ 
+type Query {
+	getProvider(providerId: ID!): GetProviderResponse
+	listProvider: ListProviderResponse
+}
+ 
+# TODO: need to check Subscription
+type Subscription {
+	createdProvider: CreateProviderResponse
+		@aws_subscribe(mutations: ["createProvider"])
+
+}
+ 
+schema {
+	query: Query
+	mutation: Mutation
+	subscription: Subscription
 }
