@@ -35,12 +35,10 @@ export class RTProviderAppSyncAPI extends Construct {
       }
     });
 
-    const apiSchema = new CfnGraphQLSchema(this, "ProvicerAppsyncApiSchema", {
+    new CfnGraphQLSchema(this, "ProvicerAppsyncApiSchema", {
       apiId: appSyncGraphQLApi.attrApiId,
       definition: readFileSync("src/schema/schema.graphql").toString(),
     });
-
-    appSyncGraphQLApi.addDependency(apiSchema)
 
     // Role to invoke lambda data source
     const appsyncLambdaRole = new Role(
