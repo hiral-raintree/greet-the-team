@@ -13,29 +13,61 @@ export class LambdaResolverStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ResolverLambdaPros) {
     super(scope, id);
 
-    const lambdaFunction = new lambda.Function(this, "resolver_lambda", {
+    const providerLambdaFunction = new lambda.Function(this, "resolver_lambda", {
       functionName: "resolver_lambda",
       runtime: lambda.Runtime.PYTHON_3_8,
       code: lambda.Code.fromAsset("src/lambda/resolver-lambda"),
       handler: "resolver_lambda.index_handler",
     });
 
-    const APIDataSource = new CfnDataSource(this, 'data-source', {
+    const providerDataSource = new CfnDataSource(this, 'provider-data-source', {
       apiId: props.apiId,
-      name: 'DataSource',
+      name: 'providerDataSource',
       type: 'AWS_LAMBDA',
       lambdaConfig: {
-        lambdaFunctionArn: lambdaFunction.functionArn,
+        lambdaFunctionArn: providerLambdaFunction.functionArn,
       },
-      serviceRoleArn: props.roleArn
+      serviceRoleArn: props.roleArn,
     });
 
-    const Resolver = new CfnResolver(this, `resolver`, {
+    const createProviderResolver = new CfnResolver(this, `provider-resolver`, {
+      apiId: props.apiId,
+      typeName: 'Mutation',
+      fieldName: 'createProvider',
+      dataSourceName: providerDataSource.name,
+    });
+    createProviderResolver.addDependency(providerDataSource);
+
+    const updateProviderResolver = new CfnResolver(this, 'update-provider-resolver', {
+      apiId: props.apiId,
+      typeName: 'Mutation',
+      fieldName: 'updateProvider',
+      dataSourceName: providerDataSource.name,
+    });
+    updateProviderResolver.addDependency(providerDataSource);
+
+    const deleteProviderResolver = new CfnResolver(this, `delete-provider-resolver`, {
+      apiId: props.apiId,
+      typeName: 'Mutation',
+      fieldName: 'deleteProvider',
+      dataSourceName: providerDataSource.name,
+    });
+    deleteProviderResolver.addDependency(providerDataSource);
+
+    const getProviderResolver = new CfnResolver(this, 'get-provider-resolver', {
       apiId: props.apiId,
       typeName: 'Query',
-      fieldName: 'getBookByTitle',
-      dataSourceName: APIDataSource.name,
+      fieldName: 'getProvider',
+      dataSourceName: providerDataSource.name,
     });
-    Resolver.addDependency(APIDataSource);
+    getProviderResolver.addDependency(providerDataSource);
+
+    const listProviderResolver = new CfnResolver(this, 'list-provider-resolver', {
+      apiId: props.apiId,
+      typeName: 'Query',
+      fieldName: 'listProvider',
+      dataSourceName: providerDataSource.name,
+    });
+    listProviderResolver.addDependency(providerDataSource);
   }
 }
