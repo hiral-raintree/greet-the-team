@@ -1,7 +1,6 @@
 import {
   CfnGraphQLApi,
   CfnGraphQLSchema,
-  CfnSourceApiAssociation,
 } from 'aws-cdk-lib/aws-appsync';
 import {
   Effect,
@@ -18,7 +17,6 @@ import { readFileSync } from "fs";
 interface RTProviderAppSyncProps {
   name: string;
   userPoolId: string;
-  mergedApiId: string;
 }
 
 export class RTProviderAppSyncAPI extends Construct {
@@ -63,15 +61,6 @@ export class RTProviderAppSyncAPI extends Construct {
     new LambdaResolverStack(this, 'lambda-resolver', { 
       apiId: appSyncGraphQLApi.attrApiId,
       roleArn: appsyncLambdaRole.roleArn
-    });
-
-    // Map the Provider Appsync API with Merged API
-    new CfnSourceApiAssociation(this, 'AppSyncSourceAPIAssociation', {
-      sourceApiIdentifier: appSyncGraphQLApi.attrApiId,
-      mergedApiIdentifier: props.mergedApiId,
-      sourceApiAssociationConfig: {
-        mergeType: 'AUTO_MERGE',
-      },
     });
 
     // Output configs to run tests

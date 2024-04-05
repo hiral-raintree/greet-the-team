@@ -4,7 +4,6 @@ import { Construct } from 'constructs';
 // import { LambdaStack } from '../lib/lambda-stack';
 // import { AppSyncStack } from '../lib/appsync-stack';
 import { RTProviderServiceCognitoUserPool } from '../lib/cognito-stack';
-import { RTMergedApiStack } from '../lib/merged-appsync-stack';
 import { RTProviderAppSyncAPI } from '../lib/provider-appsync-stack';
 
 const app = new cdk.App();
@@ -29,21 +28,20 @@ export class RTProviderServiceStack extends cdk.Stack {
         signInCaseSensitive: true,
       }
     );
-      
-    // Create Merged AppSync API
-    const mergedAppSyncAPIName = `RT-provider-merged-API`;
-    new RTMergedApiStack(this, mergedAppSyncAPIName, {
-      name: mergedAppSyncAPIName,
-    });
-    const RTMergedApiId = cdk.Fn.importValue(`RTMergedApiId`)
 
     // Create Provider AppSync API
     const appSyncAPIName = `RT-provider-appSync-API`;
     new RTProviderAppSyncAPI(this, appSyncAPIName, {
       name: appSyncAPIName,
       userPoolId: userPool.userPoolId  as string,
-      mergedApiId: RTMergedApiId as string,
     });
+
+    // Create Merged AppSync API
+    // const mergedAppSyncAPIName = `RT-provider-merged-API`;
+    // new RTMergedApiStack(this, mergedAppSyncAPIName, {
+    //   name: mergedAppSyncAPIName,
+    //   providerSourceAPI: RTProviderAppSyncSourceAPI,
+    // });
 
     // Create required parameters to run integration tests
     new cdk.CfnOutput(this, 'UserPoolsId', {
