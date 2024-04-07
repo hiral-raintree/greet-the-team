@@ -2,6 +2,9 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnDataSource, CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { join } from 'path';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 import { Construct } from 'constructs';
 
@@ -10,16 +13,15 @@ interface ResolverLambdaPros {
   roleArn: string;
 }
 
-export class LambdaResolverStack extends cdk.Stack {
+export class LambdaProviderResolverStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ResolverLambdaPros) {
     super(scope, id);
     const eventBusARN = 'arn:aws:sns:us-east-1:807198808460:Providers'
 
-    const providerLambdaFunction = new lambda.Function(this, "resolver_lambda", {
-      functionName: "resolver_lambda",
-      runtime: lambda.Runtime.PYTHON_3_8,
-      code: lambda.Code.fromAsset("src/lambda/resolver-lambda"),
-      handler: "resolver_lambda.index_handler",
+    const providerLambdaFunction = new NodejsFunction(this, 'provider-lambda', {
+      entry: join('/home/cybage/codebase/TypeScriptTestApp/src/lambda/resolver-lambda/handler.ts'),
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'handler',
     });
 
     providerLambdaFunction.role?.attachInlinePolicy(
