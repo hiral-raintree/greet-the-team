@@ -28,7 +28,7 @@ export class RDSStack extends Construct {
       parameterGroup: rds.ParameterGroup.fromParameterGroupName(
         this,
         "aurorapostgres13",
-        "aurorapostgres13"
+        "default.aurora-postgresql13"
       ),
       defaultDatabaseName: dbName,
       vpc,
