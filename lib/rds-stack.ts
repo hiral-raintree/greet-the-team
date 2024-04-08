@@ -25,8 +25,8 @@ export class RDSStack extends Construct {
       engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
       parameterGroup: rds.ParameterGroup.fromParameterGroupName(
         this,
-        "ParameterGroup",
-        "default.aurora-postgresql16"
+        "aurorapostgres16",
+        "aurorapostgres16"
       ),
       defaultDatabaseName: dbName,
       vpc,
