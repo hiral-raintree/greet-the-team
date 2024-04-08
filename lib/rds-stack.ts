@@ -22,11 +22,13 @@ export class RDSStack extends Construct {
 
     // Create the Serverless Aurora DB cluster; set the engine to Postgres
     this.rdsCluster = new rds.ServerlessCluster(this, 'ProviderAuroraDB', {
-      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_1 }),
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ 
+        version: rds.AuroraPostgresEngineVersion.VER_16_1,
+      }),
       parameterGroup: rds.ParameterGroup.fromParameterGroupName(
         this,
         "aurorapostgres16",
-        "aurorapostgres16"
+        "default.aurora-postgresql16"
       ),
       defaultDatabaseName: dbName,
       vpc,
