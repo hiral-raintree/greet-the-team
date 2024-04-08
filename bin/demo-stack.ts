@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 // import { AppSyncStack } from '../lib/appsync-stack';
 import { RTProviderServiceCognitoUserPool } from '../lib/cognito-stack';
 import { RTProviderAppSyncAPI } from '../lib/provider-appsync-stack';
+import { RDSStack } from '../lib/rds-stack';
 
 const app = new cdk.App();
 
@@ -29,19 +30,16 @@ export class RTProviderServiceStack extends cdk.Stack {
       }
     );
 
+    // Create RDS
+    const AuroraDB = new RDSStack(this, `rds-${id}`)
+
     // Create Provider AppSync API
     const appSyncAPIName = `RT-provider-appSync-API`;
     new RTProviderAppSyncAPI(this, appSyncAPIName, {
       name: appSyncAPIName,
       userPoolId: userPool.userPoolId  as string,
+      dbHost: AuroraDB.rdsCluster.clusterEndpoint.hostname,
     });
-
-    // Create Merged AppSync API
-    // const mergedAppSyncAPIName = `RT-provider-merged-API`;
-    // new RTMergedApiStack(this, mergedAppSyncAPIName, {
-    //   name: mergedAppSyncAPIName,
-    //   providerSourceAPI: RTProviderAppSyncSourceAPI,
-    // });
 
     // Create required parameters to run integration tests
     new cdk.CfnOutput(this, 'UserPoolsId', {

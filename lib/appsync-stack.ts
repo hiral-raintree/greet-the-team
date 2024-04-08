@@ -14,8 +14,12 @@ import {
 import { LambdaResolverStack } from './lambda-resolver-stack';
 
 
+interface AppSyncProps {
+  dbHost: string;
+}
+
 export class AppSyncStack extends cdk.Stack {
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: AppSyncProps) {
     super(scope, id);
 
     // AWS AppSync
@@ -46,7 +50,8 @@ export class AppSyncStack extends cdk.Stack {
 
     new LambdaResolverStack(this, 'lambda-resolver', { 
       apiId: appSyncGraphQLApi.apiId,
-      roleArn: dataSourceServiceRole.roleArn
+      roleArn: dataSourceServiceRole.roleArn,
+      dbHost: props.dbHost,
     });
 
     new cdk.CfnOutput(this, 'AppSyncAPIUrl', {

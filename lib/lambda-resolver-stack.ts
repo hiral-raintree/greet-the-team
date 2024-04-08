@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 interface ResolverLambdaPros {
   apiId: string;
   roleArn: string;
+  dbHost: string;
 }
 
 export class LambdaResolverStack extends cdk.Stack {

@@ -17,6 +17,7 @@ import { readFileSync } from "fs";
 interface RTProviderAppSyncProps {
   name: string;
   userPoolId: string;
+  dbHost: string;
 }
 
 export class RTProviderAppSyncAPI extends Construct {
@@ -60,7 +61,8 @@ export class RTProviderAppSyncAPI extends Construct {
 
     new LambdaResolverStack(this, 'lambda-resolver', { 
       apiId: appSyncGraphQLApi.attrApiId,
-      roleArn: appsyncLambdaRole.roleArn
+      roleArn: appsyncLambdaRole.roleArn,
+      dbHost: props.dbHost,
     });
 
     // Output configs to run tests
