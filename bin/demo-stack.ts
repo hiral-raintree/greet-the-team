@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 // import { LambdaStack } from '../lib/lambda-stack';
 // import { AppSyncStack } from '../lib/appsync-stack';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { RTProviderServiceCognitoUserPool } from '../lib/cognito-stack';
 import { RTProviderAppSyncAPI } from '../lib/provider-appsync-stack';
 import { RDSStack } from '../lib/rds-stack';
@@ -20,6 +21,14 @@ export class RTProviderServiceStack extends cdk.Stack {
   ) {
     super(scope, id);
 
+    // Create VPC
+    const RTPSvpc = new ec2.Vpc(this, 'RT-Provider-Service-VPC');
+
+    new cdk.CfnOutput(this, 'VPC ID', {
+      value: RTPSvpc.vpcId,
+      description: 'VPC ID',
+    });
+
     const { userPool, userPoolClient } = new RTProviderServiceCognitoUserPool(
       this,
       'RT-provider-service-cognito-pool',
@@ -31,7 +40,10 @@ export class RTProviderServiceStack extends cdk.Stack {
     );
 
     // Create RDS
-    const AuroraDB = new RDSStack(this, `rds-${id}`)
+    const AuroraDB = new RDSStack(this, `rds-${id}`,
+    {
+      vpc: RTPSvpc
+    });
 
     // Create Provider AppSync API
     const appSyncAPIName = `RT-provider-appSync-API`;
@@ -39,6 +51,7 @@ export class RTProviderServiceStack extends cdk.Stack {
       name: appSyncAPIName,
       userPoolId: userPool.userPoolId  as string,
       dbHost: AuroraDB.rdsCluster.clusterEndpoint.hostname,
+      vpc: RTPSvpc,
     });
 
     // Create required parameters to run integration tests

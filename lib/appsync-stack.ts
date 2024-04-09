@@ -12,10 +12,11 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { LambdaResolverStack } from './lambda-resolver-stack';
-
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface AppSyncProps {
   dbHost: string;
+  vpc: ec2.Vpc;
 }
 
 export class AppSyncStack extends cdk.Stack {
@@ -52,6 +53,7 @@ export class AppSyncStack extends cdk.Stack {
       apiId: appSyncGraphQLApi.apiId,
       roleArn: dataSourceServiceRole.roleArn,
       dbHost: props.dbHost,
+      vpc: props.vpc,
     });
 
     new cdk.CfnOutput(this, 'AppSyncAPIUrl', {

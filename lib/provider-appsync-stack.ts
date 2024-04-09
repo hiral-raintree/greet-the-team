@@ -13,11 +13,13 @@ import { Construct } from 'constructs';
 import { CfnOutput, Tags } from 'aws-cdk-lib';
 import { LambdaResolverStack } from './lambda-resolver-stack';
 import { readFileSync } from "fs";
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface RTProviderAppSyncProps {
   name: string;
   userPoolId: string;
   dbHost: string;
+  vpc: ec2.Vpc;
 }
 
 export class RTProviderAppSyncAPI extends Construct {
@@ -63,6 +65,7 @@ export class RTProviderAppSyncAPI extends Construct {
       apiId: appSyncGraphQLApi.attrApiId,
       roleArn: appsyncLambdaRole.roleArn,
       dbHost: props.dbHost,
+      vpc: props.vpc,
     });
 
     // Output configs to run tests

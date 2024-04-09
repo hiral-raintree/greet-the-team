@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnDataSource, CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 import { Construct } from 'constructs';
 
@@ -9,6 +10,7 @@ interface ResolverLambdaPros {
   apiId: string;
   roleArn: string;
   dbHost: string;
+  vpc: ec2.Vpc;
 }
 
 export class LambdaResolverStack extends cdk.Stack {
@@ -21,6 +23,8 @@ export class LambdaResolverStack extends cdk.Stack {
       runtime: lambda.Runtime.PYTHON_3_8,
       code: lambda.Code.fromAsset("src/lambda/resolver-lambda"),
       handler: "resolver_lambda.index_handler",
+      vpc: props.vpc,
+      // vpcSubnets: { subnets: props.vpc.privateSubnets },
     });
 
     providerLambdaFunction.role?.attachInlinePolicy(

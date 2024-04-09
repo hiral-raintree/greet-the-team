@@ -6,15 +6,19 @@ import * as secretsManager from 'aws-cdk-lib/aws-secretsmanager';
 
 import { Construct } from 'constructs';
 
+interface RDSStackProps {
+  vpc: ec2.Vpc;
+}
+
 export class RDSStack extends Construct { 
   public readonly vpc: ec2.Vpc;
   public readonly rdsCluster: rds.ServerlessCluster;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: RDSStackProps) {
     super(scope, id);
 
     // Create the VPC needed for the Aurora Serverless DB cluster
-    const vpc = new ec2.Vpc(this, 'RDSVPC');
+    const vpc = props.vpc;
 
     const dbUsername = 'master';
     const dbPassword = 'My1ProviderAuroraDatabasePassword*';
