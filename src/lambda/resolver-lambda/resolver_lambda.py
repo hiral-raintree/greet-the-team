@@ -6,6 +6,7 @@ logger.setLevel(logging.DEBUG)
 def index_handler(event, context):
   logger.info("Reolver is invoked by AppSync API successfully, Congratulations !!!")
   logger.info("Event: ", event)
+  logger.info("Context: ", context)
 
   return {
     "statusCode": 200

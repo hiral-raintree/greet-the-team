@@ -2,6 +2,9 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnDataSource, CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { join } from 'path';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 import { Construct } from 'constructs';
@@ -13,18 +16,16 @@ interface ResolverLambdaPros {
   vpc: ec2.Vpc;
 }
 
-export class LambdaResolverStack extends cdk.Stack {
+export class LambdaProviderResolverStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ResolverLambdaPros) {
     super(scope, id);
     const eventBusARN = 'arn:aws:events:us-east-1:807198808460:event-bus/RTEventBus'
 
-    const providerLambdaFunction = new lambda.Function(this, "resolver_lambda", {
-      functionName: "resolver_lambda",
-      runtime: lambda.Runtime.PYTHON_3_8,
-      code: lambda.Code.fromAsset("src/lambda/resolver-lambda"),
-      handler: "resolver_lambda.index_handler",
+    const providerLambdaFunction = new NodejsFunction(this, 'provider-lambda', {
+      entry: join(__dirname, '../src/lambda/resolver-lambda/handler.ts'),
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'handler',
       vpc: props.vpc,
-      // vpcSubnets: { subnets: props.vpc.privateSubnets },
       environment: {
         DB_HOST: props.dbHost
       },
