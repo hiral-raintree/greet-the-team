@@ -16,7 +16,7 @@ interface ResolverLambdaPros {
 export class LambdaResolverStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ResolverLambdaPros) {
     super(scope, id);
-    const eventBusARN = 'arn:aws:sns:us-east-1:807198808460:Providers'
+    const eventBusARN = 'arn:aws:events:us-east-1:807198808460:event-bus/RTEventBus'
 
     const providerLambdaFunction = new lambda.Function(this, "resolver_lambda", {
       functionName: "resolver_lambda",
@@ -25,6 +25,9 @@ export class LambdaResolverStack extends cdk.Stack {
       handler: "resolver_lambda.index_handler",
       vpc: props.vpc,
       // vpcSubnets: { subnets: props.vpc.privateSubnets },
+      environment: {
+        DB_HOST: props.dbHost
+      },
     });
 
     providerLambdaFunction.role?.attachInlinePolicy(

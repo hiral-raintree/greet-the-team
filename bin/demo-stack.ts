@@ -11,6 +11,8 @@ import { LambdaStack } from '../lib/lambda-stack';
 import { EventBus } from 'aws-cdk-lib/aws-events'
 import { Rule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
+import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { RemovalPolicy } from 'aws-cdk-lib';
 
 const app = new cdk.App();
 
@@ -23,21 +25,28 @@ export class RTProviderServiceStack extends cdk.Stack {
 
     // Create VPC
     const RTPSvpc = new ec2.Vpc(this, 'RT-Provider-Service-VPC');
-
     new cdk.CfnOutput(this, 'VPC ID', {
       value: RTPSvpc.vpcId,
       description: 'VPC ID',
     });
 
-    const { userPool, userPoolClient } = new RTProviderServiceCognitoUserPool(
-      this,
-      'RT-provider-service-cognito-pool',
-      {
-        domainPrefix: `rt-provider-service-login`,
-        userPoolName: `RT-provider-service-user-pool`,
-        signInCaseSensitive: true,
-      }
-    );
+    // Creating SSM parameter for authentication 
+    new StringParameter(this, 'authenticationToken', {
+      parameterName: 'authenticationToken',
+      stringValue: 'g5U7bG6CzB8sxNpl5W049X0oSfkGSkpW',
+      description: 'Authentication Token',
+      tier: ParameterTier.STANDARD,
+    }).applyRemovalPolicy(RemovalPolicy.DESTROY); 
+
+    // const { userPool, userPoolClient } = new RTProviderServiceCognitoUserPool(
+    //   this,
+    //   'RT-provider-service-cognito-pool',
+    //   {
+    //     domainPrefix: `rt-provider-service-login`,
+    //     userPoolName: `RT-provider-service-user-pool`,
+    //     signInCaseSegnsitive: true,
+    //   }
+    // );
 
     // Create RDS
     const AuroraDB = new RDSStack(this, `rds-${id}`,
@@ -45,23 +54,28 @@ export class RTProviderServiceStack extends cdk.Stack {
       vpc: RTPSvpc
     });
 
+    // TODO: Create token from lambda 
+    // 
+
     // Create Provider AppSync API
     const appSyncAPIName = `RT-provider-appSync-API`;
     new RTProviderAppSyncAPI(this, appSyncAPIName, {
       name: appSyncAPIName,
-      userPoolId: userPool.userPoolId  as string,
+      // userPoolId: userPool.userPoolId  as string,
+      // this will be the endpoint of the cluster 
       dbHost: AuroraDB.rdsCluster.clusterEndpoint.hostname,
       vpc: RTPSvpc,
+      eventBusArn: 'arn:aws:events:us-east-1:807198808460:event-bus/RTEventBus' 
     });
 
     // Create required parameters to run integration tests
-    new cdk.CfnOutput(this, 'UserPoolsId', {
-      value: userPool.userPoolId,
-    });
+    // new cdk.CfnOutput(this, 'UserPoolsId', {
+    //   value: userPool.userPoolId,
+    // });
 
-    new cdk.CfnOutput(this, 'UserPoolsWebClientId', {
-      value: userPoolClient.userPoolClientId,
-    });
+    // new cdk.CfnOutput(this, 'UserPoolsWebClientId', {
+    //   value: userPoolClient.userPoolClientId,
+    // });
 
   }
 }
@@ -114,8 +128,8 @@ export class RTEventBridgeStack extends cdk.Stack {
 }
 
 // Instantiate the Merged API Stack Class
-new RTEventBridgeStack(app, 'RT-Provider-Service-EventBridge')
+// new RTEventBridgeStack(app, 'RT-Provider-Service-EventBridge')
 
 
 // instantiate the main stack class  
-// new RTProviderServiceStack(app, 'RT-Provider-Service');
+new RTProviderServiceStack(app, 'RT-Provider-Service');

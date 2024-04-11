@@ -17,6 +17,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 interface AppSyncProps {
   dbHost: string;
   vpc: ec2.Vpc;
+  eventBusArn: string;
 }
 
 export class AppSyncStack extends cdk.Stack {
@@ -54,6 +55,7 @@ export class AppSyncStack extends cdk.Stack {
       roleArn: dataSourceServiceRole.roleArn,
       dbHost: props.dbHost,
       vpc: props.vpc,
+      eventBusArn: props.eventBusArn,
     });
 
     new cdk.CfnOutput(this, 'AppSyncAPIUrl', {

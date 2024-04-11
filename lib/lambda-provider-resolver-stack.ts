@@ -5,23 +5,30 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { join } from 'path';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 import { Construct } from 'constructs';
 
 interface ResolverLambdaPros {
   apiId: string;
   roleArn: string;
+  dbHost: string;
+  vpc: ec2.Vpc;
 }
 
 export class LambdaProviderResolverStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ResolverLambdaPros) {
     super(scope, id);
-    const eventBusARN = 'arn:aws:sns:us-east-1:807198808460:Providers'
+    const eventBusARN = 'arn:aws:events:us-east-1:807198808460:event-bus/RTEventBus'
 
     const providerLambdaFunction = new NodejsFunction(this, 'provider-lambda', {
-      entry: join('/home/cybage/codebase/TypeScriptTestApp/src/lambda/resolver-lambda/handler.ts'),
+      entry: join(__dirname, '../src/lambda/resolver-lambda/handler.ts'),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
+      vpc: props.vpc,
+      environment: {
+        DB_HOST: props.dbHost
+      },
     });
 
     providerLambdaFunction.role?.attachInlinePolicy(
